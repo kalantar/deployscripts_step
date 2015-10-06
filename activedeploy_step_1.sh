@@ -7,6 +7,7 @@ find . -print
 
 install_cf() {  
   #EE# TODO: Change directory
+  #MK# TODO: Move to plugin
   mkdir /tmp/cf
   __target_loc="/tmp/cf"
 
@@ -20,6 +21,7 @@ install_cf() {
 }
 
 install_active_deploy() {
+  #MK# TODO: Move to plugin
   cf uninstall-plugin active-deploy || true
   cf install-plugin ${SCRIPTDIR}/active-deploy-linux-amd64-0.1.38
 }
@@ -226,7 +228,7 @@ if [[ -n "${original_grp}" ]]; then
   cf active-deploy-show $update --timeout 60s
 
   # Wait for completion
-  wait_for_update $update test 600 && rc=$? || rc=$?
+  wait_for_update $update rampdown 600 && rc=$? || rc=$?
   echo "wait result is $rc"
   
   cf active-deploy-list

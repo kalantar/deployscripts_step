@@ -69,7 +69,7 @@ wait_for_update (){
     fi
     [[ -z ${WAITING_FOR_PHASE} ]] && WAITING_FOR_PHASE="Final"
     WAITING_FOR_PHASE_ID=$(phase_id ${WAITING_FOR_PHASE})
-    [[ -z ${WAIT_FOR} ]] && WAIT_FOR=450 
+    [[ -z ${WAIT_FOR} ]] && WAIT_FOR=600 
     
     start_time=$(date +%s)
     end_time=$(expr ${start_time} + ${WAIT_FOR})
@@ -226,7 +226,7 @@ if [[ -n "${original_grp}" ]]; then
   cf active-deploy-show $update --timeout 60s
 
   # Wait for completion
-  wait_for_update $update rampdown 450 && rc=$? || rc=$?
+  wait_for_update $update test 600 && rc=$? || rc=$?
   echo "wait result is $rc"
   
   cf active-deploy-list
@@ -234,7 +234,7 @@ if [[ -n "${original_grp}" ]]; then
   if (( $rc )); then
     echo "ERROR: update failed"
     echo cf-active-deploy-rollback $update
-    wait_for_update $update initial 450 && rc=$? || rc=$?
+    wait_for_update $update initial 600 && rc=$? || rc=$?
     #cf active-deploy-delete $update -f
     exit 1
   fi

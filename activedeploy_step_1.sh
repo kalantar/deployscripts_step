@@ -235,7 +235,7 @@ if [[ -n "${original_grp}" ]]; then
     echo "ERROR: update failed"
     echo cf-active-deploy-rollback $update
     wait_for_update $update initial 180 && rc=$? || rc=$?
-    cf active-deploy-delete $update -f
+    #cf active-deploy-delete $update -f
     exit 1
   fi
 

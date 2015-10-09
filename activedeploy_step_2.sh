@@ -5,6 +5,27 @@ SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 set -x
 find . -print
 
+install_cf() {  
+  #EE# TODO: Change directory
+  #MK# TODO: Move to plugin
+  mkdir /tmp/cf
+  __target_loc="/tmp/cf"
+
+  if [[ -z ${which_cf} || -z $(cf --version | grep "version 6\.12\.2") ]]; then
+    local __tmp=/tmp/cf$$.tgz
+    wget -O ${__tmp} 'https://cli.run.pivotal.io/stable?release=linux64-binary&version=6.12.2&source=github-rel'
+    tar -C ${__target_loc} -xzf ${__tmp}
+    rm -f ${__tmp}
+  fi
+  export PATH=/tmp/cf:$PATH
+}
+
+install_active_deploy() {
+  #MK# TODO: Move to plugin
+  cf uninstall-plugin active-deploy || true
+  cf install-plugin ${SCRIPTDIR}/active-deploy-linux-amd64-0.1.38
+}
+
 phase_id () {
   local __phase="${1}"
   
@@ -113,20 +134,37 @@ wait_for_update (){
 ###################################################################################
 ###################################################################################
 
-advance=$(cf active-deploy-advance ${CREATE})
-
-wait_for_update $advance rampdown 120 && rc=$? || rc=$?
-echo "wait result is $rc"
-
-cf active-deploy-list
-
-if (( $rc )); then
-  echo "ERROR: update failed"
-  echo cf-active-deploy-rollback $advance
-  wait_for_update $advance initial 300 && rc=$? || rc=$?
-  cf active-deploy-delete $advance
+if [[ -z ${BACKEND} ]]; then
+  echo "ERROR: Backend not specified"
   exit 1
 fi
 
-# Cleanup
-cf active-deploy-delete $advance
+install_cf
+cf --version
+install_active_deploy
+
+cf plugins
+cf active-deploy-service-info
+
+if ! [[ USER_TEST ]]
+  cf active-deploy-rollback ${CREATE}
+  exit 1
+else
+  advance=$(cf active-deploy-advance ${CREATE})
+
+  wait_for_update $advance rampdown 120 && rc=$? || rc=$?
+  echo "wait result is $rc"
+
+  cf active-deploy-list
+
+  if (( $rc )); then
+    echo "ERROR: update failed"
+    echo cf-active-deploy-rollback $advance
+    wait_for_update $advance initial 300 && rc=$? || rc=$?
+    cf active-deploy-delete $advance
+    exit 1
+  fi
+
+  # Cleanup
+  cf active-deploy-delete $advance
+fi

@@ -235,13 +235,12 @@ if [[ -n "${original_grp}" ]]; then
   echo "Executing update: ${create_command}"
   
   update=$(eval ${create_command})
+  
   CREATE=$update
   #export CREATE
   touch ${SCRIPTDIR}/temp1.sh
-  
-  pwd
-  
-  echo "export CREATE=${update}" >> temp1.sh
+  pwd  
+  echo "export CREATE=${update}" >> ${SCRIPTDIR}/temp1.sh
   
   echo ${update}
   cf active-deploy-show $update --timeout 60s

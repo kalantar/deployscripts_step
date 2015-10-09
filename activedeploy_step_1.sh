@@ -238,7 +238,10 @@ if [[ -n "${original_grp}" ]]; then
   CREATE=$update
   #export CREATE
   touch temp1.sh
-  echo pwd
+  
+  var_path=$pwd
+  echo $var_path
+  
   echo "export CREATE=${update}" >> temp1.sh
   
   echo ${update}

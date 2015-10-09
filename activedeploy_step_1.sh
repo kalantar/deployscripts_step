@@ -256,6 +256,8 @@ if [[ -n "${original_grp}" ]]; then
     #cf active-deploy-delete $update -f
     exit 1
   fi
+  
+  echo $CREATE
 
   # Cleanup
   #cf active-deploy-delete $update

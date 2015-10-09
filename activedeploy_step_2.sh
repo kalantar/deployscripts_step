@@ -160,7 +160,7 @@ cf active-deploy-service-info
 
 if [ $USER_TEST ]; then
   advance=$(cf active-deploy-advance ${CREATE})
-  wait_for_update $advance rampdown 120 && rc=$? || rc=$?
+  wait_for_update $CREATE rampdown 120 && rc=$? || rc=$?
   echo "wait result is $rc"
   cf active-deploy-list
   if (( $rc )); then

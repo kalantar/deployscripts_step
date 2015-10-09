@@ -243,6 +243,10 @@ if [[ -n "${original_grp}" ]]; then
   wait_for_update $update rampdown 600 && rc=$? || rc=$?
   echo "wait result is $rc"
   
+  cf active-deploy-advance $update
+  
+  wait_for_update $update test 600 && rc=$? || rc=$?
+  
   cf active-deploy-list
   
   if (( $rc )); then

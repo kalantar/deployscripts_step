@@ -161,20 +161,20 @@ cf plugins
 cf active-deploy-service-info
 
 if [ $USER_TEST ]; then
-  advance=$(cf active-deploy-advance ${CREATE})
+  cf active-deploy-advance $CREATE
   wait_for_update $CREATE rampdown 120 && rc=$? || rc=$?
   echo "wait result is $rc"
   cf active-deploy-list
   if (( $rc )); then
     echo "ERROR: update failed"
-    echo cf-active-deploy-rollback $advance
-    wait_for_update $advance initial 300 && rc=$? || rc=$?
-    cf active-deploy-delete $advance
+    echo cf-active-deploy-rollback $CREATE
+    wait_for_update $CREATE initial 300 && rc=$? || rc=$?
+    cf active-deploy-delete $CREATE
     exit 1
   fi
   # Cleanup
-  cf active-deploy-delete $advance
+  cf active-deploy-delete $CREATE
 else
-  cf active-deploy-rollback ${CREATE}
+  cf active-deploy-rollback $CREATE
   exit 1
 fi

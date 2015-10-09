@@ -80,7 +80,7 @@ wait_for_update (){
 	
     while (( $(date +%s) < ${end_time} )); do
 	
-	    is_complete=$(cf active-deploy-list ${WAITING_FOR})
+	    is_complete=$(cf active-deploy-list)
 		
 		tmp1="in_progress"
 		tmp2="complete"

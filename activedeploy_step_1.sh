@@ -235,6 +235,7 @@ if [[ -n "${original_grp}" ]]; then
   
   update=$(eval ${create_command})
   CREATE=$update
+  export CREATE
   
   echo ${update}
   cf active-deploy-show $update --timeout 60s

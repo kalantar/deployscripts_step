@@ -77,54 +77,66 @@ wait_for_update (){
     end_time=$(expr ${start_time} + ${WAIT_FOR})
     >&2 echo "wait from ${start_time} to ${end_time} for update to complete"
     counter=0
+	
     while (( $(date +%s) < ${end_time} )); do
-        let counter=counter+1		
-		phase=$(cf active-deploy-show ${WAITING_FOR} | grep "^phase:")
-		if [[ -z ${phase} ]]; then
-          >&2 echo "ERROR: Update ${WAITING_FOR} not in progress"
-          return 2
-        fi
-		local str="phase: "
-		echo "=========> phase: "
+	
+	    is_complete=$(cf active-deploy-list | grep $WAITING_FOR)
+		
+		tmp1="in_progress"
+		tmp2="complete"
+		if [[ "${is_complete/$tmp1}" != "$is_complete" && "${is_complete/$tmp2}" != "$is_complete" ]] ; then
+          return 0
+        else
+          let counter=counter+1		
+		  phase=$(cf active-deploy-show ${WAITING_FOR} | grep "^phase:")
+		  if [[ -z ${phase} ]]; then
+            >&2 echo "ERROR: Update ${WAITING_FOR} not in progress"
+            return 2
+          fi
+		  local str="phase: "
+		  echo "=========> phase: "
 
-		local PHASE=${phase#$str}
-		echo ${PHASE}
+		  local PHASE=${phase#$str}
+		  echo ${PHASE}
 		
-		status=$(cf active-deploy-show ${WAITING_FOR} | grep "^status:")
-		if [[ -z ${status} ]]; then
-          >&2 echo "ERROR: Update ${WAITING_FOR} not in progress"
-          return 2
-        fi
-		str="status: "
-		echo "=========> status: "
+		  status=$(cf active-deploy-show ${WAITING_FOR} | grep "^status:")
+		  if [[ -z ${status} ]]; then
+            >&2 echo "ERROR: Update ${WAITING_FOR} not in progress"
+            return 2
+          fi
+		  str="status: "
+		  echo "=========> status: "
 		
-		local STATUS=${status#$str}
-		echo ${STATUS}
+		  local STATUS=${status#$str}
+		  echo ${STATUS}
         
-        # Echo status only occassionally
-        if (( ${counter} > 9 )); then
-          >&2 echo "After $(expr $(date +%s) - ${start_time})s phase of ${WAITING_FOR} is ${PHASE} (${STATUS})"
-          counter=0
-        fi
+          # Echo status only occassionally
+          if (( ${counter} > 9 )); then
+            >&2 echo "After $(expr $(date +%s) - ${start_time})s phase of ${WAITING_FOR} is ${PHASE} (${STATUS})"
+            counter=0
+          fi
         
-        PHASE_ID=$(phase_id ${PHASE})
+          PHASE_ID=$(phase_id ${PHASE})
         
-        if [[ "${STATUS}" == "completed" && "${WAITING_FOR_PHASE}" != "Initial" ]]; then return 0; fi
+          if [[ "${STATUS}" == "completed" && "${WAITING_FOR_PHASE}" != "Initial" ]]; then return 0; fi
         
-        if [[ "${STATUS}" == "failed" ]]; then return 5; fi
+          if [[ "${STATUS}" == "failed" ]]; then return 5; fi
         
-        if [[ "${STATUS}" == "aborting" && "${WAITING_FOR_PHASE}" != "Initial" ]]; then return 5; fi
+          if [[ "${STATUS}" == "aborting" && "${WAITING_FOR_PHASE}" != "Initial" ]]; then return 5; fi
           
-        if [[ "${STATUS}" == "aborted" ]]; then
-          if [[ "${WAITING_FOR_PHASE}" == "Initial" && "${PHASE}" == "initial" ]]; then return 0
-          else return 5; fi
-        fi
+          if [[ "${STATUS}" == "aborted" ]]; then
+            if [[ "${WAITING_FOR_PHASE}" == "Initial" && "${PHASE}" == "initial" ]]; then return 0
+            else return 5; fi
+          fi
         
-        if [[ "${STATUS}" == "in_progress" ]]; then
-          if (( ${PHASE_ID} > ${WAITING_FOR_PHASE_ID} )); then return 0; fi 
-        fi
+          if [[ "${STATUS}" == "in_progress" ]]; then
+            if (( ${PHASE_ID} > ${WAITING_FOR_PHASE_ID} )); then return 0; fi 
+          fi
         
-        sleep 3
+          sleep 3
+		  
+        fi
+		
     done
     
     >&2 echo "ERROR: Failed to update group"

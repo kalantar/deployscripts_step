@@ -237,7 +237,7 @@ if [[ -n "${original_grp}" ]]; then
   update=$(eval ${create_command})
   CREATE=$update
   #export CREATE
-  touch temp1.sh
+  touch ${SCRIPTDIR}/temp1.sh
   
   pwd
   

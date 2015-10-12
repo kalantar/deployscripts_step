@@ -164,8 +164,8 @@ function get_originals(){
 
 if [[ -z ${BACKEND} ]]; then
   echo "ERROR: Backend not specified"
-  #exit 1
-  return 6
+  exit 1
+  #return 6
 fi
 
 install_cf
@@ -260,8 +260,8 @@ if [[ -n "${original_grp}" ]]; then
     echo cf-active-deploy-rollback $update
     wait_for_update $update initial 600 && rc=$? || rc=$?
     #cf active-deploy-delete $update -f
-    #exit 1
-	return 6
+    exit 1
+	#return 6
   fi
   
   echo $CREATE

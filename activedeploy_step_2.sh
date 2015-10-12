@@ -167,18 +167,18 @@ echo "========> id in progress: ${CREATE}"
 
 if [ $USER_TEST ]; then
   cf active-deploy-advance $CREATE
-  wait_for_update $CREATE rampdown 120 && rc=$? || rc=$?
+  wait_for_update $CREATE rampdown 600 && rc=$? || rc=$?
   echo "wait result is $rc"
   cf active-deploy-list
   if (( $rc )); then
     echo "ERROR: update failed"
     echo cf-active-deploy-rollback $CREATE
-    wait_for_update $CREATE initial 300 && rc=$? || rc=$?
+    wait_for_update $CREATE initial 600 && rc=$? || rc=$?
     cf active-deploy-delete $CREATE
     exit 1
   fi
   # Cleanup
-  cf active-deploy-delete $CREATE
+  cf active-deploy-delete $CREATE -f
 else
   cf active-deploy-rollback $CREATE
   exit 1

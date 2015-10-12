@@ -161,7 +161,8 @@ cf plugins
 cf active-deploy-service-info
 
 in_prog=$(cf active-deploy-list | grep "${CF_APP}_${UPDATE_ID}")
-CREATE=${in_prog[0]}
+read -a array <<< "$in_prog"
+CREATE=${array[0]}
 echo "========> id in progress: ${CREATE}"
 
 if [ $USER_TEST ]; then

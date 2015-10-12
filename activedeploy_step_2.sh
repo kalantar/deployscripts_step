@@ -181,5 +181,6 @@ if [ "$USER_TEST" = true ]; then
   cf active-deploy-delete $CREATE -f
 else
   cf active-deploy-rollback $CREATE
-  exit 1
+  cf active-deploy-delete $CREATE -f
+  return 8
 fi

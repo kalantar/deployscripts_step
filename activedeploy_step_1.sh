@@ -175,13 +175,6 @@ install_active_deploy
 cf plugins
 cf active-deploy-service-info
 
-in_prog=$(cf active-deploy-list)
-app_name="${CF_APP}_${UPDATE_ID}"
-if [[ "${in_prog/$app_name}" = "$in_prog" ]] ; then
-  echo "Active deploy in progress"
-  return 7
-fi
-
 #EE# TODO: pass in originals variable
 get_originals ${CF_APP}
 

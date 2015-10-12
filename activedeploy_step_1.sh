@@ -177,7 +177,7 @@ cf active-deploy-service-info
 
 in_prog=$(cf active-deploy-list)
 app_name="${CF_APP}_${UPDATE_ID}"
-if [[ "${in_prog/$app_name}" != "$in_prog" ]] ; then
+if [[ "${in_prog/$app_name}" = "$in_prog" ]] ; then
   echo "Active deploy in progress"
   return 7
 fi

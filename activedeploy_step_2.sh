@@ -165,7 +165,7 @@ read -a array <<< "$in_prog"
 CREATE=${array[0]}
 echo "========> id in progress: ${CREATE}"
 
-if [ $USER_TEST ]; then
+if [ "$USER_TEST" = true ]; then
   cf active-deploy-advance $CREATE
   wait_for_update $CREATE rampdown 600 && rc=$? || rc=$?
   echo "wait result is $rc"

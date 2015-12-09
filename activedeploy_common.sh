@@ -10,9 +10,9 @@ function install_cf() {
   mkdir /tmp/cf
   __target_loc="/tmp/cf"
 
-  if [[ -z ${which_cf} || -z $(cf --version | grep "version 6\.14\.0") ]]; then
+  if [[ -z ${which_cf} || -z $(cf --version | grep "version 6\.13\.0") ]]; then
     local __tmp=/tmp/cf$$.tgz
-    wget -O ${__tmp} 'https://cli.run.pivotal.io/stable?release=linux64-binary&version=6.14.0&source=github-rel'
+    wget -O ${__tmp} 'https://cli.run.pivotal.io/stable?release=linux64-binary&version=6.13.0&source=github-rel'
     tar -C ${__target_loc} -xzf ${__tmp}
     rm -f ${__tmp}
   fi

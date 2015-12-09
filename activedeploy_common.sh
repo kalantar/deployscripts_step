@@ -29,7 +29,7 @@ function install_active_deploy() {
   if [[ -z $(cf list-plugin-repos | grep "bluemix") ]]; then
     cf add-plugin-repo bluemix http://plugins.ng.bluemix.net
   fi
-  cf install-plugin active-deploy -r bluemix
+  cf install-plugin active-deploy -r bluemix -f
 }
 
 

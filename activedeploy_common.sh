@@ -1,6 +1,7 @@
 #/bin/bash
 
 
+# TODO: Move to plugin init script
 # Install a suitable version of the CloudFoundary CLI (cf. https://github.com/cloudfoundry/cli/releases)
 # Include the installed binary in $PATH
 # Usage: install_cf
@@ -20,10 +21,10 @@ function install_cf() {
 }
 
 
+# TODO: Move to plugin init script
 # Install the latest version of the ActiveDeploy CLI (from http://plugins.ng.bluemix.net)
 # Usage: install_active_deploy
 function install_active_deploy() {
-  #MK# TODO: Move to plugin
   cf uninstall-plugin active-deploy || true
   # cf install-plugin ${SCRIPTDIR}/active-deploy-linux-amd64-0.1.38
   if [[ -z $(cf list-plugin-repos | grep "bluemix") ]]; then
@@ -33,6 +34,7 @@ function install_active_deploy() {
 }
 
 
+# TODO: Move to plugin init script
 # Install a CloudFoundary and ActiveDeploy CLIs; provide debugging information
 # Usage: slave_setup
 function slave_setup() {

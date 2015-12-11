@@ -94,18 +94,23 @@ if [[ -n "${original_grp}" ]]; then
   if [[ -n "${RAMPDOWN}" ]]; then create_command="${create_command} --rampdown ${RAMPDOWN}s"; fi
   
   echo "Executing update: ${create_command}"
+  update=$(${create_command})
   
-  update=$(eval ${create_command})
+  if (( $? )); then
+    echo "Failed to initiate active deployment; error was:"
+    echo ${update}
+    exit 1
+  fi
   
+  echo "Initiated update: ${update}"
+  cf active-deploy-show $update --timeout 60s
+
   CREATE=$update
   #export CREATE
   touch ${SCRIPTDIR}/temp1.sh
   pwd  
   echo "export CREATE=${update}" >> ${SCRIPTDIR}/temp1.sh
   
-  echo ${update}
-  cf active-deploy-show $update --timeout 60s
-
   # Wait for completion
   wait_for_update $update rampdown 600 && rc=$? || rc=$?
   echo "wait result is $rc"
@@ -120,13 +125,9 @@ if [[ -n "${original_grp}" ]]; then
     echo "ERROR: update failed"
     echo cf-active-deploy-rollback $update
     wait_for_update $update initial 600 && rc=$? || rc=$?
-    #cf active-deploy-delete $update -f
+    cf active-deploy-delete $update -f
     exit 1
-	#return 6
   fi
   
   echo $CREATE
-
-  # Cleanup
-  #cf active-deploy-delete $update
 fi
